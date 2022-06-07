@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install latest version of apache
+      yum:
+        name: httpd
+        state: latest
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install git latest version
+      yum:
+        name: git
+        state: latest
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: creating a directory
+      file:
+        path: /home/ec2-user/praveen
+        state: directory
+        mode: 0755
