@@ -1,0 +1,36 @@
+ remote_user: ec2-user
+  become: yes
+  become_user: root
+  vars:
+    java_for_linux2: java-1.8.0-openjdk
+    tomcat: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.21/bin/apache-tomcat-10.0.21.tar.gz
+  tasks:
+      - name: updating packages
+        yum:
+          name: "*"
+          state: latest
+      - name: install java
+        yum:
+          name: "{{java_for_linux2}}"
+          state: present
+      - name: download tomcat
+        get_url:
+          url: "{{tomcat}}"
+          dest: /home/ec2-user
+      - name: extract tomcat
+        unarchive:
+          src: "/home/ec2-user/apache-tomcat-10.0.21.tar.gz"
+          dest: /home/ec2-user
+          remote_src: yes
+      - name: copy tomcat user file
+        copy:
+          src: /home/ec2-user/apache-tomcat-10.0.21/conf/tomcat-users.xml
+          dest: /home/ec2-user/apache-tomcat-10.0.21/conf/tomcat-users.xml
+      - name: copy context file
+        copy:
+          src: /home/ec2-user/apache-tomcat-10.0.21/webapps/manager/META-INF/context.xml
+          dest: /home/ec2-user/apache-tomcat-10.0.21/webapps/manager/META-INF/context.xml
+      - name: start tomcat
+        shell: nohup /home/ec2-user/apache-tomcat-10.0.21/bin/startup.sh
+      - name: copy war file
+        shell: wget http://54.196.158.253:8081/repository/Simple-App/com/maven/bt/SimpleWebApplication/9.1.14/SimpleWebApplication-9.1.14.war -P /home/ec2-user/apache-tomcat-10.0.21/webapps
