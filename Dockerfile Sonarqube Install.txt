@@ -1,0 +1,17 @@
+FROM centos:latest
+RUN cd /etc/yum.repos.d/
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum update -y
+RUN yum install java-11-openjdk-devel -y
+RUN yum update -y
+RUN mkdir /opt/sonarqube
+WORKDIR /opt/sonarqube
+RUN yum install tar gzip zip unzip -y
+RUN yum install wget -y
+ADD https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.3.zip .
+RUN unzip /opt/sonarqube/sonarqube-7.3.zip
+RUN mv sonarqube-7.3/* /opt/sonarqube
+ENV PATH=$PATH:/opt/sonarqube/bin
+EXPOSE 9000
+CMD ["/opt/sonarqube/bin/linux-x86-64/sonar.sh","run"]
