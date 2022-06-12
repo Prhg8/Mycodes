@@ -15,7 +15,15 @@
          src: /home/ec2-user/apache-tomcat-10.0.21/webapps/SimpleWebApplication-9.1.14.war
          dest: /home/ec2-user/
          remote_src: True
-     - name: copy new war
-       command: wget http://54.196.158.253:8081/repository/WebApp/WebApp/Simple/1.0/Simple-1.0.war -P /home/ec2-user/apache-tomcat-10.0.21/webapps/
+         when: war_path.stat.exists == True
+     - name: deleting old war file
+       file:
+         path: /home/ec2-user/apache-tomcat-10.0.21/webapps/SimpleWebApplication-9.1.14.war
+         state: absent
+         when: war_path.stat.exists == True
+     - name: Get new war file
+       get_url:
+       url: http://54.196.158.253:8081/repository/WebApp/WebApp/Simple/1.0/Simple-1.0.war
+       dest: /home/ec2-user/apache-tomcat-10.0.21/webapps/
      - name: start tomcat
        shell: nohup /home/ec2-user/apache-tomcat-10.0.21/bin/startup.sh
